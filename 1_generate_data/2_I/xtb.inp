@@ -1,0 +1,106 @@
+
+&GLOBAL
+  PROJECT pbe_1000
+  RUN_TYPE ENERGY
+  PRINT_LEVEL LOW
+&END GLOBAL
+ 
+&FORCE_EVAL
+  &DFT
+    WFN_RESTART_FILE_NAME c60-RESTART.wfn
+    CHARGE 0
+    MULTIPLICITY 1
+    UKS .FALSE.
+
+     &QS
+      METHOD xTB
+      &xTB
+        DO_EWALD  T
+        CHECK_ATOMIC_CHARGES  T
+        COULOMB_INTERACTION T
+        &PARAMETER
+          DISPERSION_PARAMETER_FILE dftd3.dat
+          PARAM_FILE_NAME xTB_parameters
+        &END PARAMETER
+      &END
+
+      &DISTRIBUTION
+        BASIC_OPTIMIZATION .FALSE.
+        BASIC_SPATIAL_OPTIMIZATION .TRUE.
+      &END
+    &END QS
+  
+    &SCF
+      MAX_SCF 100
+      SCF_GUESS ATOMIC
+      EPS_SCF 1e-07
+      IGNORE_CONVERGENCE_FAILURE T
+      &OT
+        PRECONDITIONER FULL_SINGLE_INVERSE
+        MINIMIZER DIIS
+      &END
+    &END SCF
+    
+    
+    &POISSON
+      POISSON_SOLVER MT
+      PERIODIC NONE
+    &END POISSON
+    
+    
+    
+     &PRINT
+!       &ELECTRIC_FIELD_GRADIENT
+!         FILENAME libra
+!         &EACH
+!           QS_SCF 0
+!         &END
+!       &END
+       &AO_MATRICES
+         &EACH
+           QS_SCF 0
+         &END
+         DENSITY T
+         OVERLAP T
+         KOHN_SHAM_MATRIX T
+         FILENAME libra
+         NDIGITS 10
+       &END
+!      &MO
+!        ENERGIES .TRUE.
+!        COEFFICIENTS .TRUE.
+!        OCCUPATION_NUMBERS .TRUE.
+!        FILENAME coeffs
+!        NDIGITS 8
+!        &EACH
+!          QS_SCF 0
+!        &END
+!     &END
+    &END
+
+  &END DFT
+
+    
+  
+  
+  &SUBSYS
+    
+    &CELL
+      A 25.0 0.0 0.0
+      B 0.0 25.0 0.0
+      C 0.0 0.0 25.0
+      PERIODIC NONE
+    &END CELL
+    
+    
+    &TOPOLOGY   
+     COORD_FILE_NAME  coord-1000.xyz 
+      COORD_FILE_FORMAT XYZ
+      &CENTER_COORDINATES .TRUE.
+      &END
+    &END    
+    
+  &END SUBSYS
+    
+&END FORCE_EVAL
+
